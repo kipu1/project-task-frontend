@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { createProject, updateProject, getProjectById } from "../api/api";
 import { TextField, Typography, Button, Paper, Box } from "@mui/material";
 import { FolderOpen } from "@mui/icons-material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -28,7 +29,6 @@ function ProjectForm() {
     }
   }, [id]);
 
-  // Validación dinámica de campos
   useEffect(() => {
     const isValid = name.trim() !== "" && description.trim() !== "";
     setIsFormValid(isValid);
@@ -80,6 +80,17 @@ function ProjectForm() {
             textAlign: "center",
           }}
         >
+          <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+            <Button
+              component={Link}
+              to="/"
+              startIcon={<ArrowBackIcon />}
+              variant="outlined"
+            >
+              Volver
+            </Button>
+          </Box>
+
           <FolderOpen sx={{ fontSize: 40, color: "#1976d2", mb: 1 }} />
           <Typography variant="h5" fontWeight={600} gutterBottom>
             {id ? "Editar Proyecto" : "Nuevo Proyecto"}

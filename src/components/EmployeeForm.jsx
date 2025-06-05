@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { TextField, Button, Typography, Paper, Box } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { createEmployee } from "../api/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -10,6 +11,7 @@ function EmployeeForm() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
+  const [emailError, setEmailError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +19,7 @@ function EmployeeForm() {
       firstName.trim() !== "" &&
       lastName.trim() !== "" &&
       email.trim() !== "" &&
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); // validación básica de email
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     setIsFormValid(isValid);
   }, [firstName, lastName, email]);
 
@@ -27,9 +29,18 @@ function EmployeeForm() {
 
     try {
       await createEmployee({ firstName, lastName, email });
-      navigate("/");
+      navigate("/formularioproyecto");
     } catch (error) {
-      console.error("Error al registrar el empleado:", error);
+      if (
+        error.response &&
+        error.response.data &&
+        typeof error.response.data === "string" &&
+        error.response.data.toLowerCase().includes("email")
+      ) {
+        setEmailError("Este correo ya está en uso. Elige otro, por favor.");
+      } else {
+        console.error("Error al registrar el empleado:", error);
+      }
     }
   };
 
@@ -44,6 +55,7 @@ function EmployeeForm() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          px: 2,
         }}
       >
         <Paper
@@ -53,8 +65,20 @@ function EmployeeForm() {
             width: "100%",
             maxWidth: 400,
             borderRadius: 3,
+            backgroundColor: "#ffffff",
           }}
         >
+          <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+            <Button
+              component={Link}
+              to="/formularioproyecto"
+              startIcon={<ArrowBackIcon />}
+              variant="outlined"
+            >
+              Volver
+            </Button>
+          </Box>
+
           <Typography
             variant="h5"
             fontWeight={600}
@@ -84,15 +108,22 @@ function EmployeeForm() {
               fullWidth
               label="Correo"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError("");
+              }}
               required
               margin="normal"
               type="email"
-              error={email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
+              error={
+                (email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ||
+                emailError !== ""
+              }
               helperText={
-                email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                emailError ||
+                (email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
                   ? "Correo inválido"
-                  : ""
+                  : "")
               }
             />
             <Button

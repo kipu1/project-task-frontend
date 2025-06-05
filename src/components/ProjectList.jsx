@@ -105,7 +105,7 @@ function ProjectList() {
               </Typography>
               <Button
                 component={Link}
-                to="/new"
+                to="/formularioproyecto"
                 variant="contained"
                 startIcon={<Add />}
                 sx={{ borderRadius: 2, px: 3 }}
