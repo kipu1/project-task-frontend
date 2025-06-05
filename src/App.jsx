@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import ProjectForm from "./components/ProjectForm";
 import ProjectPage from "./pages/ProjectPage";
@@ -65,6 +65,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Ruta comodín para redirigir cualquier otra URL al login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
