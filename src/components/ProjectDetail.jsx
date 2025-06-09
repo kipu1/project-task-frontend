@@ -49,6 +49,8 @@ function ProjectDetail() {
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   const loadProject = async () => {
     const res = await getProjectById(id);
@@ -145,6 +147,13 @@ function ProjectDetail() {
     closeAssignDialog();
   };
 
+  // Filtrar tareas
+  const filteredTasks = tasks.filter(
+    (t) =>
+      t.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (statusFilter === "" || t.status === statusFilter)
+  );
+
   return (
     <>
       <Header />
@@ -225,12 +234,44 @@ function ProjectDetail() {
             </Box>
           </Paper>
 
-          {/* Tareas */}
+          {/* Filtros */}
           <Typography variant="h5" gutterBottom>
             Tareas del Proyecto
           </Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+            gap={2}
+            flexWrap="wrap"
+          >
+            <TextField
+              label="Buscar por título"
+              variant="outlined"
+              size="small"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <TextField
+              select
+              label="Filtrar por estado"
+              variant="outlined"
+              size="small"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              sx={{ minWidth: 150 }}
+            >
+              <MenuItem value="">Todos</MenuItem>
+              <MenuItem value="Por hacer">Por hacer</MenuItem>
+              <MenuItem value="En progreso">En progreso</MenuItem>
+              <MenuItem value="Completada">Completada</MenuItem>
+            </TextField>
+          </Box>
+
+          {/* Tareas */}
           <Grid container spacing={2} sx={{ mb: 5 }}>
-            {tasks.map((t) => (
+            {filteredTasks.map((t) => (
               <Grid item xs={12} md={6} key={t.taskId}>
                 <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold">

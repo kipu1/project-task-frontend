@@ -16,11 +16,21 @@ import {
   Paper,
   Divider,
   Stack,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
-import { Delete, Edit, Visibility, Add, Logout } from "@mui/icons-material";
+import {
+  Delete,
+  Edit,
+  Visibility,
+  Add,
+  Logout,
+  Search,
+} from "@mui/icons-material";
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [userName, setUserName] = useState("Usuario");
   const navigate = useNavigate();
 
@@ -50,6 +60,13 @@ function ProjectList() {
     localStorage.clear();
     navigate("/login");
   };
+
+  // Filtrar proyectos por nombre o descripción
+  const filteredProjects = projects.filter((p) =>
+    (p.name + " " + p.description)
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -114,18 +131,35 @@ function ProjectList() {
               </Button>
             </Box>
 
+            {/* Campo de búsqueda */}
+            <TextField
+              label="Buscar proyecto"
+              variant="outlined"
+              fullWidth
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
             {/* Proyectos o mensaje vacío */}
-            {projects.length === 0 ? (
+            {filteredProjects.length === 0 ? (
               <Typography
                 variant="body1"
                 color="text.secondary"
                 textAlign="center"
               >
-                No hay proyectos todavía. Usa “Nuevo Proyecto” para comenzar.
+                No se encontraron proyectos. Ajusta tu búsqueda o crea uno
+                nuevo.
               </Typography>
             ) : (
               <Grid container spacing={3}>
-                {projects.map((p) => (
+                {filteredProjects.map((p) => (
                   <Grid item xs={12} sm={6} md={4} key={p.projectId}>
                     <Card
                       elevation={3}
@@ -214,7 +248,7 @@ function ProjectList() {
         }}
       >
         <Typography variant="body2">
-          © {new Date().getFullYear()} Kevin todo derechos reservados.
+          © {new Date().getFullYear()} Kevin - Todos los derechos reservados.
         </Typography>
       </Box>
     </Box>
